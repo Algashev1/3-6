@@ -95,15 +95,16 @@ function addRow(userData) {
 
 // вызов окна для подтверждения удаления строки
 function removeRowFromTable(userData) {
-  result = confirm("Вы действительно хотите удалить запись?");
+  const result = confirm("Вы действительно хотите удалить запись?");
   if (result) {
+    usersList = usersList.filter((item) => item.id !== userData.id);
     removeRow(userData);
   }
 }
 
 // удаление строки
 function removeRow(userData) {
-  $("#" + userData?.id + "-row").remove();
+  $("#" + userData.id + "-row").remove();
 }
 
 $(document).ready(function () {

@@ -1,4 +1,3 @@
-// список студентов по умолчанию, которые будут изначально в таблице
 let usersList = [
   {
     id: 1,
@@ -42,36 +41,32 @@ let usersList = [
   },
 ];
 
-// функция для добавления строк в таблицу (инициализация таблицы)
 function addRows() {
   usersList.forEach((item) => {
     addRow(item);
   });
 }
 
-// функция для добавления строки в таблицу
 function addRow(userData) {
-  // создание ячейки таблицы
   const idEl = document.createElement("td");
-  idEl.innerText = userData.id;
+  idEl.innerText = userData?.id;
 
   const fnameEl = document.createElement("td");
-  fnameEl.innerText = userData.fname;
+  fnameEl.innerText = userData?.fname;
 
   const snameEl = document.createElement("td");
-  snameEl.innerText = userData.sname;
+  snameEl.innerText = userData?.sname;
 
   const mnameEl = document.createElement("td");
-  mnameEl.innerText = userData.mname;
+  mnameEl.innerText = userData?.mname;
 
   const studEl = document.createElement("td");
-  studEl.innerText = userData.stud;
+  studEl.innerText = userData?.stud;
 
   const ageEl = document.createElement("td");
-  ageEl.innerText = userData.age;
+  ageEl.innerText = userData?.age;
   ageEl.classList.add("user-age");
 
-  // создание кнопки "Редактировать"
   const actionEl = document.createElement("td");
   const editEl = document.createElement("div");
   editEl.innerText = "Редактировать";
@@ -80,26 +75,78 @@ function addRow(userData) {
     // тут будет код для изменения строки
   };
 
-  // создание кнопки "Удалить"
   const removeEl = document.createElement("div");
   removeEl.innerText = "Удалить";
   removeEl.classList.add("table-btn", "remove-btn");
   removeEl.onclick = function () {
-    // тут будет код для удаления строки
+    // вызов функции для удаления строки
+    removeRowFromTable(userData);
   };
   actionEl.append(editEl, removeEl);
 
-  // создание строки с id и добавление в неё ячеек
   const row = document.createElement("tr");
-  row.setAttribute("id", userData.id + "-row");
+  row.setAttribute("id", userData?.id + "-row");
   row.classList.add("data-row");
   row.append(idEl, fnameEl, snameEl, mnameEl, studEl, ageEl, actionEl);
-
-  // добавление строки в таблицу
   $(".table").append(row);
 }
 
+function removeRowFromTable(userData) {
+  result = confirm("Вы действительно хотите удалить запись?");
+  if (result) {
+    usersList = usersList.filter((item) => item.id !== userData.id);
+    removeRow(userData);
+  }
+}
+
+function removeRow(userData) {
+  $("#" + userData?.id + "-row").remove();
+}
+
+//____________________________________________________________________________________________________________________________________
+
+// функция, которая генерирует случайный id
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+// функция для добавления записи в массив
+function addUser(data) {
+  data.id = getRandomIntInclusive(0, 1000);
+  usersList.push(data);
+  addRow(data);
+}
+
+// очистка формы
+function clearForm() {
+  $("#fname").val(function () {
+    return "";
+  });
+  $("#sname").val(function () {
+    return "";
+  });
+  $("#mname").val(function () {
+    return "";
+  });
+  $("#stud").val(function () {
+    return "";
+  });
+  $("#age").val(function () {
+    return "";
+  });
+}
+
 $(document).ready(function () {
-  // функция для добавления строк вызывается тогда, когда страница готова к работе
   addRows();
+
+  // событие submit для добавления новой строчки в таблицу
+  $("#addUserForm").submit(function (event) {
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+    addUser(data);
+    clearForm();
+    return false;
+  });
 });
