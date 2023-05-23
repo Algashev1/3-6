@@ -1,4 +1,6 @@
-let usersList = [
+let usersList = [];
+
+let defaultUsersList = [
   {
     id: 1,
     fname: "Иванов",
@@ -40,6 +42,23 @@ let usersList = [
     age: 18,
   },
 ];
+
+let selectedRowId;
+
+function saveUsersListToLocalStorage(array) {
+  const arrayString = JSON.stringify(array);
+  window.localStorage.setItem("users", arrayString);
+}
+
+function getUsersListFromLocalStorage() {
+  const value = window.localStorage.getItem("users");
+  let result = JSON.parse(value);
+
+  if (result === null) {
+    result = defaultUsersList;
+  }
+  return result;
+}
 
 function addRows() {
   usersList.forEach((item) => {
@@ -94,6 +113,7 @@ function removeRowFromTable(userData) {
   result = confirm("Вы действительно хотите удалить запись?");
   if (result) {
     usersList = usersList.filter((item) => item.id !== userData.id);
+    saveUsersListToLocalStorage(usersList);
     removeRow(userData);
   }
 }
@@ -105,6 +125,7 @@ function removeRow(userData) {
 function addUser(data) {
   data.id = getRandomIntInclusive(0, 1000);
   usersList.push(data);
+  saveUsersListToLocalStorage(usersList);
   addRow(data);
 }
 
@@ -135,7 +156,7 @@ function clearForm() {
 //____________________________________________________________________________________________________________________________________
 
 function updateForm(userData) {
-  // returnAddBtn();
+  returnAddBtn();
   selectedRowId = userData?.id;
   // с помощью метода children мы получаем дочерние элемента (ячейки таблицы) строки с id '{n}-row'
   const cells = $("#" + selectedRowId + "-row").children();
@@ -173,14 +194,16 @@ function updateForm(userData) {
 
 // изменение записи в массиве
 function updateUser(data) {
-  usersList.map((item) => {
+  data.id = selectedRowId;
+  usersList = usersList.map((item) => {
     if (item.id === data.id) {
       return data;
     }
     return item;
   });
-
+  saveUsersListToLocalStorage(usersList);
   updateRow(userData);
+  returnAddBtn();
 }
 
 // изменение данных в строке
@@ -204,6 +227,7 @@ function returnAddBtn() {
 }
 
 $(document).ready(function () {
+  usersList = getUsersListFromLocalStorage();
   addRows();
 
   $("#addUserForm").submit(function (event) {
@@ -214,7 +238,7 @@ $(document).ready(function () {
       data.id = getRandomIntInclusive(0, 1000);
       addUser(data);
     } else if (value === "Изменить") {
-      updateRow(data);
+      updateUser(data);
     }
     clearForm();
     return false;

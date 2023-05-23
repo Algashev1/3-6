@@ -42,6 +42,10 @@ let usersList = [
   },
 ];
 
+window.localStorage.setItem("name", "Геннадий");
+const myName = window.localStorage.getItem("name");
+console.log(myName);
+
 // функция для добавления строк в таблицу (инициализация таблицы)
 function addRows() {
   usersList.forEach((item) => {
